@@ -4,7 +4,7 @@ import Product from '../models/ProductsModel.js'
 
 //@desc   Fetch all products
 //@route   GET /api/products
-//@daccess   public
+//@daccess   Public
 const getProducts = asyncHandler(async(req, res) => {
     const products = await Product.find({})
 
@@ -14,7 +14,7 @@ const getProducts = asyncHandler(async(req, res) => {
 
 //@desc   Fetch a single product
 //@route   GET /api/products/:id
-//@daccess   public
+//@daccess   Public
 const getProductsById = asyncHandler(async(req, res) => {
     const product = await Product.findById(req.params.id)
 
