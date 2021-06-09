@@ -4,7 +4,7 @@ import connectDB from './config/db.js'
 import colors from 'colors'
 import productsRouter from './routes/productsRoute.js'
 import usersRouter from './routes/usersRoutes.js'
-import ordersRouter from './routes/ordersRoute'
+import ordersRouter from './routes/ordersRoute.js'
 import { errorHandler, notFound } from './middleare/errorMiddlewares.js'
 
 dotenv.config()
