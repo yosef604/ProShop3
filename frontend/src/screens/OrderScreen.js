@@ -35,8 +35,6 @@ const OrderScreen = ({match}) => {
             document.body.appendChild(script)
         }
 
-        addPayPalScript()
-
         if (!order || successPay) {
             dispatch({type: ORDER_PAY_RESET})
             dispatch(getOrdersDetails(orderId))
