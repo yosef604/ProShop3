@@ -1,10 +1,11 @@
 import express from 'express'
-import { addOrderItems, getOrderBiId, updateOrderToPaid } from '../controlers/orderControler.js'
+import { addOrderItems, getOrderBiId, updateOrderToPaid, getMyOrders } from '../controlers/orderControler.js'
 import { protect } from '../middleare/AuthMiddlewarw.js'
 
 const router = express.Router()
 
 router.route('/').post(protect, addOrderItems)
+router.route('/myorders').get(protect, getMyOrders)
 router.route('/:id').get(protect, getOrderBiId)
 router.route('/:id/pay').put(protect, updateOrderToPaid)
 
