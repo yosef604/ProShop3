@@ -4,6 +4,7 @@ import { ORDER_MY_LIST_RESET } from '../constants/ordersConstants'
 import { 
     USERS_LIST_FAIL,
     USERS_LIST_REQUEST,
+    USERS_LIST_RESET,
     USERS_LIST_SUCCESS,
     USER_DETAILS_FAIL,
     USER_DETAILS_REQUEST,
@@ -54,6 +55,7 @@ export const logout = () => async (dispatch) => {
     dispatch({type: USER_DETAILS_RESET})
     dispatch({type: ORDER_MY_LIST_RESET})
     dispatch({type: CART_RESET_ITEM})
+    dispatch({type: USERS_LIST_RESET})
 }
 
 export const register = (name, email, password) => async (dispatch) => {
