@@ -5,6 +5,7 @@ import { listUsers } from '../actions/usersActions'
 import Loader from '../components/Loader'
 import Message from '../components/Message'
 import {LinkContainer} from 'react-router-bootstrap'
+import { deleteUser } from '../actions/usersActions'
 
 const UsersListScreen = ({history}) => {
     const dispatch = useDispatch()
@@ -15,6 +16,9 @@ const UsersListScreen = ({history}) => {
     const userLogin = useSelector(state => state.userLogin)
     const {userInfo} = userLogin
 
+    const userDelete = useSelector(state => state.userDelete)
+    const {success:successDelete} = userDelete
+
     useEffect(() => {
         if (userInfo && userInfo.isAdmin){
             dispatch(listUsers())
@@ -22,10 +26,12 @@ const UsersListScreen = ({history}) => {
             history.push('/')
         }
         
-    }, [dispatch, history, userInfo])
+    }, [dispatch, history, userInfo, successDelete])
 
     const deleteHandler = (id) => {
-        console.log('delete')
+        if(window.confirm('Are you sure?')){
+            dispatch(deleteUser(id))
+        }
     }
 
     return (
