@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { Button, Form, FormControl, FormGroup, FormLabel} from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import {Link} from 'react-router-dom'
-import { listProductsDetails } from '../actions/productsActions'
+import { editProductAction, listProductsDetails } from '../actions/productsActions'
 import FormContainer from '../components/FormContainer'
 import Loader from '../components/Loader'
 import Message from '../components/Message'
-import { USER_EDIT_RESET } from '../constants/usersConstants'
+import { PRODUCT_EDIT_RESET } from '../constants/productsConstants'
 
 const EditProductScreen = ({match, history}) => {    
     const productId = match.params.id
@@ -25,10 +25,15 @@ const EditProductScreen = ({match, history}) => {
     const productsDetails = useSelector(state => state.productsDetails)
     const {loading, error, product} = productsDetails
 
-    const editUser = useSelector(state => state.editUser)
-    const {loading:editLoading, error:editError, success:editSuccess} = editUser
+    const editProduct = useSelector(state => state.editProduct)
+    const {loading:editLoading, error:editError, success:editSuccess} = editProduct
 
     useEffect(() => {
+        if(editSuccess) {
+            dispatch({type: PRODUCT_EDIT_RESET})
+            history.push('/admin/productslist')
+            dispatch(listProductsDetails(productId))
+        } else {
             if (!product.name || product._id !== productId) {
                 dispatch(listProductsDetails(productId))
             } else {
@@ -40,15 +45,20 @@ const EditProductScreen = ({match, history}) => {
                 setDescription(product.description)
                 setCountInStock(product.countInStock)
             }
-    }, [dispatch, productId, product, history])
+        }
+           
+    }, [dispatch, productId, product, history, editSuccess])
 
     const submitHandler = (e) => {
         e.preventDefault()
+        dispatch(editProductAction({
+            _id: productId, name, price, category, brand, countInStock, image, description
+        }))
     }
 
     return (
         <>
-            <Link to='/admin/productlist' className='btn btn-light my-3'>Go Back</Link>
+            <Link to='/admin/productslist' className='btn btn-light my-3'>Go Back</Link>
 
             <FormContainer>
             <h1>Edit Product</h1>
