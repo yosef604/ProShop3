@@ -4,8 +4,8 @@ import {useDispatch, useSelector} from 'react-redux'
 import Loader from '../components/Loader'
 import Message from '../components/Message'
 import {LinkContainer} from 'react-router-bootstrap'
-import { deleteUser } from '../actions/usersActions'
-import { deleteProductAction, listProducts } from '../actions/productsActions'
+import { createProductAction, deleteProductAction, listProducts } from '../actions/productsActions'
+import { PRODUCT_CREATE_RESET } from '../constants/productsConstants'
 
 const ProductsListScreen = ({history}) => {
     const dispatch = useDispatch()
@@ -16,22 +16,29 @@ const ProductsListScreen = ({history}) => {
     const productDelete = useSelector(state => state.productDelete)
     const {success:successDelete, error:errorDelete, loading:loadingDelete} = productDelete
 
+    const productCreate = useSelector(state => state.productCreate)
+    const {success:successCreate, error:errorCreate, loading:loadingCreate, product:createdProduct} = productCreate
+
     const userLogin = useSelector(state => state.userLogin)
     const {userInfo} = userLogin
 
     useEffect(() => {
-        if (userInfo && userInfo.isAdmin){
-            dispatch(listProducts())
-        } else {
+        dispatch({type: PRODUCT_CREATE_RESET})
+
+        if (!userInfo.isAdmin){
             history.push('/')
+        } 
+
+        if (successCreate) {
+            history.push(`/admin/product/${createdProduct._id}/edit`)
+        } else {
+            dispatch(listProducts())
         }
         
-    }, [dispatch, history, userInfo, successDelete])
+    }, [dispatch, history, userInfo, successDelete, createdProduct, successCreate])
 
-    const createProductHandler = (id) => {
-        if(window.confirm('Are you sure?')){
-            dispatch(deleteUser(id))
-        }
+    const createProductHandler = () => {
+        dispatch(createProductAction())
     }
 
     const deleteHandler = (id) => {
@@ -52,6 +59,8 @@ const ProductsListScreen = ({history}) => {
                     </Button>
                 </Col>
             </Row>
+            {loadingCreate && <Loader />}
+            {errorCreate && <Message variant='danger'>{errorCreate}</Message>}
             {loadingDelete && <Loader />}
             {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
             {loading ? <Loader /> : error ? <Message variant='danger'></Message> : (
@@ -75,7 +84,7 @@ const ProductsListScreen = ({history}) => {
                                 <td>{product.category}</td>
                                 <td>{product.brand}</td>
                                 <td>
-                                    <LinkContainer to={`/admin/user/${product._id}/edit`}>
+                                    <LinkContainer to={`/admin/product/${product._id}/edit`}>
                                         <Button variant='light' className='btn-sm'>
                                             <i className='fas fa-edit'></i>
                                         </Button>
