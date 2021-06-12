@@ -2,37 +2,49 @@ import React, { useEffect, useState } from 'react'
 import { Button, Form, FormControl, FormGroup, FormLabel} from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import {Link} from 'react-router-dom'
-import { getUserDetails } from '../actions/usersActions'
+import { editUserProfile, getUserDetails } from '../actions/usersActions'
 import FormContainer from '../components/FormContainer'
 import Loader from '../components/Loader'
 import Message from '../components/Message'
+import { USER_EDIT_RESET } from '../constants/usersConstants'
 
-const EditUserScreen = ({match, history}) => {
+const EditUserScreen = ({match, history}) => {    
     const userId = match.params.id
 
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [isAdmin, setIsAdmin] = useState(false)
-    const [password, setPassword] = useState('XXX')
-    const [confirmPassword, setConfirmPassword] = useState('XXX')
+    const [password, setPassword] = useState(123)
+    const [confirmPassword, setConfirmPassword] = useState(123)
 
     const dispatch = useDispatch()
 
     const userDetails = useSelector(state => state.userDetails)
     const {loading, error, user} = userDetails
 
+    const editUser = useSelector(state => state.editUser)
+    const {loading:editLoading, error:editError, success:editSuccess} = editUser
+
     useEffect(() => {
-        if (!user.name || user._id !== userId) {
-            dispatch(getUserDetails(userId))
+        if (editSuccess) {
+            dispatch({type: USER_EDIT_RESET})
+            history.push('/admin/userslist')
         } else {
-            setName(user.name)
-            setEmail(user.email)
-            setIsAdmin(user.isAdmin)
+            if (!user.name || user._id !== userId) {
+                dispatch(getUserDetails(userId))
+            } else {
+                setName(user.name)
+                setEmail(user.email)
+                setIsAdmin(user.isAdmin)
+            }
         }
-    }, [user, dispatch, userId])
+    }, [user, dispatch, userId, editSuccess, history])
 
     const submitHandler = (e) => {
         e.preventDefault()
+        dispatch(editUserProfile({
+            _id: userId, name, email, password, isAdmin
+        }))
     }
 
     return (
@@ -41,7 +53,8 @@ const EditUserScreen = ({match, history}) => {
 
             <FormContainer>
             <h1>Edit User</h1>
-
+            {editLoading && <Loader />}
+            {editError && <Message variant='danger'>{editError}</Message>}
             {loading ? <Loader /> : error ? <Message variant='danger'>{error}</Message> : (
 
                 <Form onSubmit={submitHandler}>

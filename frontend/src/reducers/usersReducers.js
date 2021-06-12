@@ -1,4 +1,8 @@
 import { 
+    USER_EDIT_FAIL,
+    USER_EDIT_REQUEST,
+    USER_EDIT_RESET,
+    USER_EDIT_SUCCESS,
     USERS_LIST_FAIL,
     USERS_LIST_REQUEST,
     USERS_LIST_RESET,
@@ -90,6 +94,21 @@ export const usersListReducer = (state = {users: []}, action) => {
         case USERS_LIST_FAIL:
             return {loading: false, error: action.payload}
         case USERS_LIST_RESET:
+            return {users: []}
+        default:
+            return state
+    }
+}
+
+export const editUserReducer = (state = {users: {}}, action) => {
+    switch (action.type) {
+        case USER_EDIT_REQUEST:
+            return {loading: true}
+        case USER_EDIT_SUCCESS:
+            return {loading: false ,success: true, users: action.payload}
+        case USER_EDIT_FAIL:
+            return {loading: false, error: action.payload}
+        case USER_EDIT_RESET:
             return {users: []}
         default:
             return state

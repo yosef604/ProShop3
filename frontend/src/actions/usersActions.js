@@ -2,6 +2,7 @@ import axios from 'axios'
 import { CART_RESET_ITEM } from '../constants/cartConstatnts'
 import { ORDER_MY_LIST_RESET } from '../constants/ordersConstants'
 import { 
+    USER_EDIT_REQUEST,
     USERS_LIST_FAIL,
     USERS_LIST_REQUEST,
     USERS_LIST_RESET,
@@ -22,7 +23,9 @@ import {
     USER_REGISTER_SUCCESS,
     USER_UPDATE_PROFILE_FAIL,
     USER_UPDATE_PROFILE_REQUEST,
-    USER_UPDATE_PROFILE_SUCCESS
+    USER_UPDATE_PROFILE_SUCCESS,
+    USER_EDIT_SUCCESS,
+    USER_EDIT_FAIL
 } from "../constants/usersConstants"
 
 export const login = (email, password) => async (dispatch) => {
@@ -55,7 +58,7 @@ export const login = (email, password) => async (dispatch) => {
 export const logout = () => async (dispatch) => {
     localStorage.removeItem('userInfo')
     dispatch({type: USER_LOGOUT})
-    dispatch({type: USER_DETAILS_RESET})
+    // dispatch({type: USER_DETAILS_RESET})
     dispatch({type: ORDER_MY_LIST_RESET})
     dispatch({type: CART_RESET_ITEM})
     dispatch({type: USERS_LIST_RESET})
@@ -216,6 +219,40 @@ export const deleteUser = (id) => async (dispatch, getState) => {
     } catch (error) {
         dispatch({
             type: USER_DELETE_FAIL,
+            payload: error.response && error.response.data.message ? 
+            error.response.data.message : error.message
+        })
+    }
+}
+
+export const editUserProfile = (user) => async (dispatch, getState) => {
+    try {
+        dispatch({
+            type: USER_EDIT_REQUEST
+        })
+
+        const { userLogin: {userInfo} } = getState()
+
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                authorization: `Bearer ${userInfo.token}`
+            }
+        }
+        const {data} = await axios.put(`/api/users/${user._id}`, user, config)
+
+        dispatch({
+            type: USER_EDIT_SUCCESS,
+        })
+
+        dispatch({
+            type: USER_DETAILS_SUCCESS,
+            payload: data
+        })
+ 
+    } catch (error) {
+        dispatch({
+            type: USER_EDIT_FAIL,
             payload: error.response && error.response.data.message ? 
             error.response.data.message : error.message
         })
