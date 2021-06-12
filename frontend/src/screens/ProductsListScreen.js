@@ -5,13 +5,16 @@ import Loader from '../components/Loader'
 import Message from '../components/Message'
 import {LinkContainer} from 'react-router-bootstrap'
 import { deleteUser } from '../actions/usersActions'
-import { listProducts } from '../actions/productsActions'
+import { deleteProductAction, listProducts } from '../actions/productsActions'
 
 const ProductsListScreen = ({history}) => {
     const dispatch = useDispatch()
 
     const productsList = useSelector(state => state.productsList)
     const {loading, error, products} = productsList
+
+    const productDelete = useSelector(state => state.productDelete)
+    const {success:successDelete, error:errorDelete, loading:loadingDelete} = productDelete
 
     const userLogin = useSelector(state => state.userLogin)
     const {userInfo} = userLogin
@@ -23,7 +26,7 @@ const ProductsListScreen = ({history}) => {
             history.push('/')
         }
         
-    }, [dispatch, history, userInfo])
+    }, [dispatch, history, userInfo, successDelete])
 
     const createProductHandler = (id) => {
         if(window.confirm('Are you sure?')){
@@ -33,7 +36,7 @@ const ProductsListScreen = ({history}) => {
 
     const deleteHandler = (id) => {
         if(window.confirm('Are you sure?')){
-            dispatch(deleteUser(id))
+            dispatch(deleteProductAction(id))
         }
     }
 
@@ -49,6 +52,8 @@ const ProductsListScreen = ({history}) => {
                     </Button>
                 </Col>
             </Row>
+            {loadingDelete && <Loader />}
+            {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
             {loading ? <Loader /> : error ? <Message variant='danger'></Message> : (
                 <Table striped bordered hover responsive className='table-sm'>
                     <thead>
