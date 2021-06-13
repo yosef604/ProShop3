@@ -30,26 +30,33 @@ const EditProductScreen = ({match, history}) => {
     const editProduct = useSelector(state => state.editProduct)
     const {loading:editLoading, error:editError, success:editSuccess} = editProduct
 
+    const userLogin = useSelector(state => state.userLogin)
+    const {userInfo} = userLogin
+
     useEffect(() => {
-        if(editSuccess) {
-            dispatch({type: PRODUCT_EDIT_RESET})
-            history.push('/admin/productslist')
-            dispatch(listProductsDetails(productId))
-        } else {
-            if (!product.name || product._id !== productId) {
+        if (userInfo && userInfo.isAdmin) {
+            if(editSuccess) {
+                dispatch({type: PRODUCT_EDIT_RESET})
+                history.push('/admin/productslist')
                 dispatch(listProductsDetails(productId))
             } else {
-                setName(product.name)
-                setPrice(product.price)
-                setImage(product.image)
-                setBrand(product.brand)
-                setCategory(product.category)
-                setDescription(product.description)
-                setCountInStock(product.countInStock)
+                if (!product.name || product._id !== productId) {
+                    dispatch(listProductsDetails(productId))
+                } else {
+                    setName(product.name)
+                    setPrice(product.price)
+                    setImage(product.image)
+                    setBrand(product.brand)
+                    setCategory(product.category)
+                    setDescription(product.description)
+                    setCountInStock(product.countInStock)
+                }
             }
+        } else {
+            history.push('/')
         }
            
-    }, [dispatch, productId, product, history, editSuccess])
+    }, [dispatch, productId, product, history, editSuccess, userInfo])
 
     const uploadFileHandler = async (e) => {
         const file = e.target.files[0]

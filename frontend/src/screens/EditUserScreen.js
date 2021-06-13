@@ -25,20 +25,27 @@ const EditUserScreen = ({match, history}) => {
     const editUser = useSelector(state => state.editUser)
     const {loading:editLoading, error:editError, success:editSuccess} = editUser
 
+    const userLogin = useSelector(state => state.userLogin)
+    const {userInfo} = userLogin
+
     useEffect(() => {
-        if (editSuccess) {
-            dispatch({type: USER_EDIT_RESET})
-            history.push('/admin/userslist')
-        } else {
-            if (!user.name || user._id !== userId) {
-                dispatch(getUserDetails(userId))
+        if (userInfo && userInfo.isAdmin) {
+            if (editSuccess) {
+                dispatch({type: USER_EDIT_RESET})
+                history.push('/admin/userslist')
             } else {
-                setName(user.name)
-                setEmail(user.email)
-                setIsAdmin(user.isAdmin)
+                if (!user.name || user._id !== userId) {
+                    dispatch(getUserDetails(userId))
+                } else {
+                    setName(user.name)
+                    setEmail(user.email)
+                    setIsAdmin(user.isAdmin)
+                }
             }
+        } else {
+            history.push('/')
         }
-    }, [user, dispatch, userId, editSuccess, history])
+    }, [user, dispatch, userId, editSuccess, history, userInfo])
 
     const submitHandler = (e) => {
         e.preventDefault()
