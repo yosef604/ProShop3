@@ -3,6 +3,8 @@ import  { useSelector, useDispatch } from 'react-redux'
 import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap'
 import {LinkContainer} from 'react-router-bootstrap'
 import { logout } from '../actions/usersActions'
+import SearchBar from '../components/SearchBar'
+import {Route} from 'react-router-dom'
 
 const Header = ({history}) => {
     const dispatch = useDispatch()
@@ -24,6 +26,9 @@ const Header = ({history}) => {
 
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
+
+                        <Route render={({history}) => <SearchBar history={history} />}></Route>
+
                         <Nav className="ml-auto">
                             <LinkContainer to='/cart'>
                                 <Nav.Link><i className='fas fa-shopping-cart'></i> Cart</Nav.Link>
