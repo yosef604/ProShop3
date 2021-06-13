@@ -8,12 +8,17 @@ import usersRouter from './routes/usersRoutes.js'
 import ordersRouter from './routes/ordersRoute.js'
 import uploadRouter from './routes/uploadRoutes.js'
 import { errorHandler, notFound } from './middleare/errorMiddlewares.js'
+import morgan from 'morgan'
 
 dotenv.config()
 
 connectDB()
 
 const app = express()
+
+if (process.env.NODE_ENV === 'development') {
+    app.use(morgan('dev'))
+}
 
 app.use(express.json())
 
