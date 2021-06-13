@@ -1,4 +1,7 @@
 import { 
+    ORDERS_LIST_FAIL,
+    ORDERS_LIST_REQUEST,
+    ORDERS_LIST_SUCCESS,
     ORDER_CREATE_FAIL,
     ORDER_CREATE_REQUEST, 
     ORDER_CREATE_SUCCESS, 
@@ -66,6 +69,19 @@ export const myOrdersListReducer = (state = {orders: []}, action) => {
             return {loading: false, error: action.payload}
         case ORDER_MY_LIST_RESET:
             return {orders: []}
+        default:
+            return state
+    }
+}
+
+export const adminOrdersListReducer = (state = {orders: []}, action) => {
+    switch (action.type) {
+        case ORDERS_LIST_REQUEST:
+            return {loading: true}
+        case ORDERS_LIST_SUCCESS:
+            return {loading: false, orders: action.payload}
+        case ORDERS_LIST_FAIL:
+            return {loading: false, error: action.payload}
         default:
             return state
     }
