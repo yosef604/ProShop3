@@ -24,14 +24,16 @@ app.use(express.json())
 
 const __dirname = path.resolve()
 
-app.use('/upload', express.static(path.join(__dirname, '/upload')))
 
 app.use('/api/products', productsRouter)
 app.use('/api/users', usersRouter)
 app.use('/api/orders', ordersRouter)
 app.use('/api/upload', uploadRouter)
-
+app.use('/upload', express.static(path.join(__dirname, '/upload')))
 app.get('/api/config/paypal', (req, res) => res.send(process.env.PAYPAL_CLIENT_ID))
+
+app.use(notFound)
+app.use(errorHandler)
 
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, '/frontend/build')))
@@ -45,13 +47,10 @@ if (process.env.NODE_ENV === 'production') {
     })
 }
 
-app.use(notFound)
-
-app.use(errorHandler)
-
 
 
 
 const PORT = process.env.PORT || 5000
+
 
 app.listen(5000, console.log(`Server running in ${process.env.NODE_ENV} mode, on port ${PORT}`.yellow.bold))
