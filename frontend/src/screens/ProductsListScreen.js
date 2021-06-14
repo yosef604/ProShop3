@@ -2,16 +2,18 @@ import React, { useEffect } from 'react'
 import {Button, Table, Row, Col} from 'react-bootstrap'
 import {useDispatch, useSelector} from 'react-redux'
 import Loader from '../components/Loader'
+import Paginate from '../components/Paginate'
 import Message from '../components/Message'
 import {LinkContainer} from 'react-router-bootstrap'
 import { createProductAction, deleteProductAction, listProducts } from '../actions/productsActions'
 import { PRODUCT_CREATE_RESET } from '../constants/productsConstants'
 
-const ProductsListScreen = ({history}) => {
+const ProductsListScreen = ({history, match}) => {
+    const pageNumber = match.params.pageNumber || 1
     const dispatch = useDispatch()
 
     const productsList = useSelector(state => state.productsList)
-    const {loading, error, products} = productsList
+    const {loading, error, products, page, pages} = productsList
 
     const productDelete = useSelector(state => state.productDelete)
     const {success:successDelete, error:errorDelete, loading:loadingDelete} = productDelete
@@ -32,10 +34,17 @@ const ProductsListScreen = ({history}) => {
         if (successCreate) {
             history.push(`/admin/product/${createdProduct._id}/edit`)
         } else {
-            dispatch(listProducts())
+            dispatch(listProducts('', pageNumber))
         }
         
-    }, [dispatch, history, userInfo, successDelete, createdProduct, successCreate])
+    }, [dispatch, 
+        history, 
+        userInfo, 
+        successDelete, 
+        createdProduct, 
+        successCreate,
+        pageNumber
+    ])
 
     const createProductHandler = () => {
         dispatch(createProductAction())
@@ -64,6 +73,7 @@ const ProductsListScreen = ({history}) => {
             {loadingDelete && <Loader />}
             {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
             {loading ? <Loader /> : error ? <Message variant='danger'></Message> : (
+                <>
                 <Table striped bordered hover responsive className='table-sm'>
                     <thead>
                         <tr>
@@ -99,6 +109,8 @@ const ProductsListScreen = ({history}) => {
                         ))}
                     </tbody>
                 </Table>
+                <Paginate pages ={pages} page={page} isAdmin={true} />
+                </>
             )}
         </>
     )
